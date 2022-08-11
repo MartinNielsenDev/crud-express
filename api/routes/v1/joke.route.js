@@ -12,7 +12,7 @@ router
     .route('/:jokeId')
     /**
      * @swagger
-     * /test:
+     * /v1/jokes/{jokeId}:
      *   get:
      *   summary: Get joke by id
      *   description: Get a joke by id
@@ -23,8 +23,7 @@ router
      *       description: Returns the joke
      */
     .get(jokeValidation.getJoke, controller.get)
-    .put(controller.replace)
-    .patch(controller.update)
-    .delete(controller.delete)
+    .put(jokeValidation.getJoke, controller.replace)
+    .delete(jokeValidation.getJoke, controller.delete)
 
 module.exports = router

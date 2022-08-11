@@ -7,9 +7,10 @@ const prisma = new PrismaClient()
  * @public
  */
 exports.get = async (req, res, next) => {
+    const jokeId = parseInt(req.params.jokeId)
     const joke = await prisma.joke.findUnique({
         where: {
-            id: req.params.jokeId
+            id: jokeId
         }
     })
 
@@ -40,7 +41,7 @@ exports.create = async (req, res, next) => {
         }
     })
 
-    res.status(httpStatus.OK)
+    res.status(httpStatus.CREATED)
     return res.json(createdJoke)
 }
 
@@ -48,7 +49,24 @@ exports.create = async (req, res, next) => {
  * Replace an existing joke
  * @public
  */
-exports.replace = (req, res, next) => {
+exports.replace = async (req, res, next) => {
+    const jokeId = parseInt(req.params.jokeId)
+    try {
+        const updatedJoke = await prisma.joke.update({
+            data: {
+                joke: req.body.joke,
+                punchline: req.body.punchline
+            },
+            where: {
+                id: jokeId
+            }
+        })
+        res.status(httpStatus.CREATED)
+        return res.json(updatedJoke)
+    }catch (err) {
+        res.status(httpStatus.BAD_REQUEST)
+        return res.json()
+    }
 }
 
 /**
@@ -56,11 +74,26 @@ exports.replace = (req, res, next) => {
  * @public
  */
 exports.update = (req, res, next) => {
+    res.status(httpStatus.METHOD_NOT_ALLOWED)
+    return res.json()
 }
 
 /**
  * Delete a joke
  * @public
  */
-exports.delete = (req, res, next) => {
+exports.delete = async (req, res, next) => {
+    const jokeId = parseInt(req.params.jokeId)
+    try {
+        await prisma.joke.delete({
+            where: {
+                id: jokeId
+            }
+        })
+        res.status(httpStatus.NO_CONTENT)
+    }catch (err) {
+        res.status(httpStatus.NOT_FOUND)
+    }
+
+    return res.json()
 }
